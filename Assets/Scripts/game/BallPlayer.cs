@@ -1,9 +1,10 @@
 using System;
 using TestTaskBall.components;
+using TestTaskBall.game.abstraction;
 using UnityEngine;
 
 namespace TestTaskBall.game {
-    public class BallPlayer : MonoBehaviour, ISelectableObject {
+    public class BallPlayer : BallBase, ISelectableObject {
         private const float RADIUS_DECREASE_SPEED = 0.1f;
 
         [SerializeField] private float _sizeOnStart = 1f;
@@ -11,8 +12,8 @@ namespace TestTaskBall.game {
         public event Action<float> OnRadiusDecreasing;
         
         private bool _isSelected;
-        private float _radius = 1f;
         private Action _onClickCallback;
+        private Action _onRadiusDecreasingCallback;
 
         public void Init(Action clickAction) {
             _onClickCallback = clickAction; 
@@ -28,7 +29,7 @@ namespace TestTaskBall.game {
         }
 
         private void Start() {
-            _radius = _sizeOnStart;
+            SetRadius(_sizeOnStart);
         }
 
         private void Update() {
@@ -44,10 +45,6 @@ namespace TestTaskBall.game {
 
             UpdateScale();
             OnRadiusDecreasing?.Invoke(decreasingRadius);
-        }
-
-        private void UpdateScale() {
-            transform.localScale = _radius * Vector3.one;
         }
     }
 }
