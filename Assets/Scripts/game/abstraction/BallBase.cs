@@ -15,11 +15,13 @@ namespace TestTaskBall.game.abstraction {
         public void SetRadius(float radius) {
             _radius = radius;
             _size = _radius / _initialRadius;
-            UpdateScale();
+            UpdateScaleAndPosition();
         }
         
-        protected void UpdateScale() {
+        protected void UpdateScaleAndPosition() {
             transform.localScale = (_radius / _initialRadius) * Vector3.one;
+            var position = transform.localPosition;
+            transform.localPosition = new Vector3(position.x, _size / 2f, position.z);
         }
     }
 }
