@@ -12,6 +12,7 @@ namespace TestTaskBall.controllers {
         private const float MOVEMENT_DISTANCE_THRESHOLD = 0.1f;
         
         [SerializeField] private LayerMask _obstacleMask;
+        [SerializeField] private CameraController _cameraController;
         [SerializeField] private InputActionReference _touchActionReference;
         [SerializeField] private LevelConfig _levelConfig;
         [SerializeField] private Transform _bulletsContainer;
@@ -33,11 +34,13 @@ namespace TestTaskBall.controllers {
             _finishPoint = finishPoint;
             _camera = Camera.main;
             if (_ballPlayer != null) {
+                var playerTransform = _ballPlayer.transform;
                 _ballPlayer.Init(OnBallSelected);
                 _ballPlayer.OnRadiusDecreasing += OnPlayerRadiusDecreasing;
                 _ballPlayer.OnCriticalSizeAchieved += OnCriticalSizeAchieved;
                 _direction = (_finishPoint.transform.position - _ballPlayer.transform.position).normalized;
-                _finishPoint.SetPlayer(_ballPlayer.transform);
+                _finishPoint.SetPlayer(playerTransform);
+                _cameraController.SetTarget(playerTransform);
             }
 
             _poolManager = new PoolManager();
@@ -116,6 +119,8 @@ namespace TestTaskBall.controllers {
             if (_finishPoint.transform.position.z - _ballPlayer.transform.position.z <= MOVEMENT_DISTANCE_THRESHOLD) {
                 _complete = true;
             }
+
+            _cameraController.StartFollow(true);
         }
 
         private void OnBallSelected() {
@@ -154,6 +159,7 @@ namespace TestTaskBall.controllers {
             _pressed = false;
             _ballPlayer.OnObjectReleased();
             _bulletsController.Shoot(_direction, _finishPoint.transform.position.z - _ballPlayer.transform.position.z);
+            _cameraController.StartFollow(false);
         }
 
         private void OnPlayerRadiusDecreasing(float radius) {
