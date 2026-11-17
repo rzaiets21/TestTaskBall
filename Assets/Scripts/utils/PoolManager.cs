@@ -36,5 +36,9 @@ namespace TestTaskBall.utils {
             _pools.Add(type, poolModel);
             return poolModel;
         }
+
+        public void Dispose() {
+            _pools.Clear();
+        }
     }
 }

@@ -68,13 +68,13 @@ namespace TestTaskBall.controllers {
             _touchAction = _touchActionReference.action;
         }
 
-        private void OnEnable() {
+        private void Start() {
             _touchAction.performed += OnPressed;
             _touchAction.canceled += OnReleased;
             _touchAction.Enable();
         }
 
-        private void OnDisable() {
+        private void OnDestroy() {
             _touchAction.performed -= OnPressed;
             _touchAction.canceled -= OnReleased;
             _touchAction.Disable();
@@ -84,6 +84,14 @@ namespace TestTaskBall.controllers {
                 _ballPlayer.OnRadiusDecreasing -= OnPlayerRadiusDecreasing;
                 _ballPlayer = null;
             }
+            _finishPoint = null;
+            _bulletsController.Dispose();
+            _bulletsController = null;
+            _obstaclesController.Dispose();
+            _obstaclesController = null;
+            _poolManager.Dispose();
+            _poolManager = null;
+            _camera = null;
         }
 
         private void OnCriticalSizeAchieved() {

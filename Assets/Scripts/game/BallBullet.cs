@@ -55,5 +55,9 @@ namespace TestTaskBall.game {
                 _onCompleted?.Invoke(this, _hitObstacle);
             }
         }
+
+        private void OnDestroy() {
+            Release();
+        }
     }
 }

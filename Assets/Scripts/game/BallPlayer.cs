@@ -105,5 +105,14 @@ namespace TestTaskBall.game {
                 OnCriticalSizeAchieved?.Invoke();
             }
         }
+
+        private void OnDestroy() {
+            OnRadiusDecreasing = null;
+            OnCriticalSizeAchieved = null;
+            _movementTween?.Kill();
+            _movementTween = null;
+            _onClickCallback = null;
+            _onRadiusDecreasingCallback = null;
+        }
     }
 }

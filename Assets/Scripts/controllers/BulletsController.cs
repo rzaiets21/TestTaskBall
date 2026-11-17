@@ -43,6 +43,13 @@ namespace TestTaskBall.controllers {
             }
         }
 
+        public void Dispose() {
+            _obstaclesController = null;
+            _currentBallBullet = null;
+            _pool.Dispose();
+            _pool = null;
+        }
+
         private void OnBulletComplete(BallBullet ballBullet, ObstacleView obstacleView) {
             _obstaclesController.Infect(obstacleView, ballBullet.Radius);
             ballBullet.Release();

@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using UnityEngine;
 
@@ -42,6 +43,12 @@ namespace TestTaskBall.game {
                 _isOpened = true;
                 PlayOpenAnimation();
             }
+        }
+
+        private void OnDestroy() {
+            _openDoorTween?.Kill();
+            _openDoorTween = null;
+            _player = null;
         }
     }
 }

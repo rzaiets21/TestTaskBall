@@ -48,16 +48,30 @@ namespace TestTaskBall.controllers {
             }
             
             var point = obstacleView.transform.position;
+            var listToRemove = new List<ObstacleView>();
             foreach (var obstacle in _activeObstacles) {
                 var offset = obstacle.transform.position - point;
                 offset.y = 0f;
 
                 if (offset.sqrMagnitude <= _infectionMultiplier * radius) {
                     obstacle.Infect();
+                    listToRemove.Add(obstacle);
                 }
             }
             
+            foreach (var view in listToRemove) {
+                _activeObstacles.Remove(view);
+            }
+            
             _onInfectionComplete?.Invoke();
+        }
+
+        public void Dispose() {
+            _pool.Dispose();
+            _pool = null;
+            _activeObstacles?.Clear();
+            _activeObstacles = null;
+            _onInfectionComplete = null;
         }
     }
 }

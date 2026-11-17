@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace TestTaskBall.controllers {
@@ -34,6 +35,10 @@ namespace TestTaskBall.controllers {
         private void SnapToTarget() {
             if (_target != null)
                 transform.position = _target.position + _offset;
+        }
+
+        private void OnDestroy() {
+            _target = null;
         }
     }
 }

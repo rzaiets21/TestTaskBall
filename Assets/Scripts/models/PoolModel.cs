@@ -31,6 +31,10 @@ namespace TestTaskBall.models {
             return obj;
         }
 
+        public void Dispose() {
+            _list.Clear();
+        }
+
         private T Create() {
             var createdObject = Object.Instantiate(_prefab, _parent);
             _list.Add(createdObject);
