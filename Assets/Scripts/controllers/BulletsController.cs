@@ -1,5 +1,6 @@
 using TestTaskBall.game;
 using TestTaskBall.models;
+using TestTaskBall.models.level;
 using TestTaskBall.utils;
 using UnityEngine;
 
@@ -7,14 +8,21 @@ namespace TestTaskBall.controllers {
     public class BulletsController {
         private PoolModel<BallBullet> _pool;
         private BallBullet _currentBallBullet;
+        private ObstaclesController _obstaclesController;
+        private float _maxBulletDistance;
+        private float _initialRadius;
         
-        public void Init(PoolManager poolManager, BallBullet bulletPrefab, Transform container) {
+        public void Init(PoolManager poolManager, BallBullet bulletPrefab, Transform container, ObstaclesController obstaclesController, LevelData levelData) {
             _pool = poolManager.AddPool(bulletPrefab, container);
+            _obstaclesController = obstaclesController;
+            _maxBulletDistance = levelData.FinishPointDistance;
+            _initialRadius = levelData.InitialRadius;
         }
 
         public void SpawnBullet(Vector3 position) {
             _currentBallBullet = _pool.GetOrCreate();
             _currentBallBullet.transform.position = position;
+            _currentBallBullet.SetInitialRadius(_initialRadius);
         }
 
         public void IncreaseBulletRadius(float radius) {
@@ -23,11 +31,16 @@ namespace TestTaskBall.controllers {
             }
         }
 
-        public void Shoot() {
+        public void Shoot(Vector3 direction) {
             if (_currentBallBullet != null) {
-                //_currentBallBullet.Shoot();
+                _currentBallBullet.Shoot(direction, OnBulletComplete, _maxBulletDistance);
                 _currentBallBullet = null;
             }
+        }
+
+        private void OnBulletComplete(BallBullet ballBullet, ObstacleView obstacleView) {
+            _obstaclesController.Infect(obstacleView, ballBullet.Radius);
+            ballBullet.Release();
         }
     }
 }
