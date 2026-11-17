@@ -5,18 +5,24 @@ using UnityEngine;
 
 namespace TestTaskBall.game {
     public class BallPlayer : BallBase, ISelectableObject {
-        private const float RADIUS_DECREASE_SPEED = 0.1f;
-
-        [SerializeField] private float _sizeOnStart = 1f;
+        private const float RADIUS_DECREASE_TIME = 6f;
+        private const float CRITICAL_SIZE_RATIO = 0.05f;
 
         public event Action<float> OnRadiusDecreasing;
-        
+        public event Action OnCriticalSizeAchieved;
+
+        private float _decreaseSpeed;
         private bool _isSelected;
         private Action _onClickCallback;
         private Action _onRadiusDecreasingCallback;
 
+        public override void SetInitialRadius(float radius) {
+            base.SetInitialRadius(radius);
+            _decreaseSpeed = radius / RADIUS_DECREASE_TIME;
+        }
+        
         public void Init(Action clickAction) {
-            _onClickCallback = clickAction; 
+            _onClickCallback = clickAction;
         }
 
         public void OnObjectClicked() {
@@ -28,10 +34,6 @@ namespace TestTaskBall.game {
             _isSelected = false;
         }
 
-        private void Start() {
-            SetRadius(_sizeOnStart);
-        }
-
         private void Update() {
             if (!_isSelected) {
                 return;
@@ -40,11 +42,13 @@ namespace TestTaskBall.game {
         }
 
         private void DecreaseRadius() {
-            var decreasingRadius = Time.deltaTime * RADIUS_DECREASE_SPEED;
-            _radius -= decreasingRadius;
-
-            UpdateScale();
+            var decreasingRadius = Time.deltaTime * _decreaseSpeed;
+            SetRadius(_radius - decreasingRadius);
             OnRadiusDecreasing?.Invoke(decreasingRadius);
+
+            if (_size <= CRITICAL_SIZE_RATIO) {
+                OnCriticalSizeAchieved?.Invoke();
+            }
         }
     }
 }
