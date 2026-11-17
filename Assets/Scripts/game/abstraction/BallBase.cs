@@ -2,6 +2,8 @@ using UnityEngine;
 
 namespace TestTaskBall.game.abstraction {
     public abstract class BallBase : MonoBehaviour {
+        public float Radius => _radius;
+        
         protected float _initialRadius;
         protected float _radius;
         protected float _size;

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using TestTaskBall.components;
 using TestTaskBall.game;
@@ -10,7 +9,9 @@ using UnityEngine.InputSystem;
 namespace TestTaskBall.controllers {
     public class GameController : MonoBehaviour {
         private const float BULLET_SPAWN_OFFSET = 3f;
+        private const float MOVEMENT_DISTANCE_THRESHOLD = 0.1f;
         
+        [SerializeField] private LayerMask _obstacleMask;
         [SerializeField] private InputActionReference _touchActionReference;
         [SerializeField] private LevelConfig _levelConfig;
         [SerializeField] private Transform _bulletsContainer;
@@ -43,6 +44,8 @@ namespace TestTaskBall.controllers {
             _obstaclesController.Init(_poolManager, obstaclePrefab, _obstaclesContainer, _levelConfig.Data.InfectionMultiplier);
             _bulletsController.Init(_poolManager, bulletPrefab, _bulletsContainer, _obstaclesController, _levelConfig.Data);
             
+            _obstaclesController.SubscribeOnInfectionComplete(OnInfectionComplete);
+            
             LoadLevel();
         }
 
@@ -74,6 +77,30 @@ namespace TestTaskBall.controllers {
                 _ballPlayer.OnRadiusDecreasing -= OnPlayerRadiusDecreasing;
                 _ballPlayer = null;
             }
+        }
+
+        private void OnInfectionComplete() {
+            var targetZ = CalculateTargetZ();
+            if (targetZ - _ballPlayer.transform.position.z >= MOVEMENT_DISTANCE_THRESHOLD) {
+                _ballPlayer.MoveTo(targetZ);
+            }
+        }
+        
+        private float CalculateTargetZ() {
+            var playerPosition = _ballPlayer.transform.position;
+            var currentZ = playerPosition.z;
+            var finishZ = _finishPoint.transform.position.z;
+            var distance = finishZ - currentZ;
+
+            if (distance <= 0f) {
+                return currentZ;
+            }
+
+            if (Physics.SphereCast(_ballPlayer.transform.position, _ballPlayer.Radius + _levelConfig.Settings.Clearance, Vector3.forward, out RaycastHit hit, distance, _obstacleMask)) {
+                return currentZ + Mathf.Max(0f, hit.distance - _levelConfig.Settings.StopGap);
+            }
+
+            return finishZ;
         }
 
         private void OnBallSelected() {

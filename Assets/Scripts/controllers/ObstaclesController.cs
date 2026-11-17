@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TestTaskBall.game;
 using TestTaskBall.models;
@@ -12,10 +13,20 @@ namespace TestTaskBall.controllers {
         private List<ObstacleView> _activeObstacles;
         private float _infectionMultiplier;
         
+        private event Action _onInfectionComplete;
+        
         public void Init(PoolManager poolManager, ObstacleView obstaclePrefab, Transform container, float infectionMultiplier) {
             _pool = poolManager.AddPool(obstaclePrefab, container);
             _activeObstacles = new List<ObstacleView>();
             _infectionMultiplier = infectionMultiplier;
+        }
+
+        public void SubscribeOnInfectionComplete(Action onInfectionComplete) {
+            _onInfectionComplete += onInfectionComplete;
+        }
+
+        public void UnsubscribeOnInfectionComplete(Action onInfectionComplete) {
+            _onInfectionComplete -= onInfectionComplete;
         }
         
         public void SpawnObstacles(LevelData levelData) {
@@ -31,6 +42,11 @@ namespace TestTaskBall.controllers {
         }
 
         public void Infect(ObstacleView obstacleView, float radius) {
+            if (obstacleView == null) {
+                _onInfectionComplete?.Invoke();
+                return;
+            }
+            
             var point = obstacleView.transform.position;
             foreach (var obstacle in _activeObstacles) {
                 var offset = obstacle.transform.position - point;
@@ -40,6 +56,8 @@ namespace TestTaskBall.controllers {
                     obstacle.Infect();
                 }
             }
+            
+            _onInfectionComplete?.Invoke();
         }
     }
 }

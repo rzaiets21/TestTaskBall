@@ -10,8 +10,6 @@ namespace TestTaskBall.game {
         private const float MAX_SPEED = 2.5f;
         
         [SerializeField] private LayerMask _collisionMask;
-
-        public float Radius => _radius;
         
         private float _speed = 1f;
 
