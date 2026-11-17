@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TestTaskBall.components;
 using TestTaskBall.game;
@@ -17,7 +18,10 @@ namespace TestTaskBall.controllers {
         [SerializeField] private Transform _bulletsContainer;
         [SerializeField] private Transform _obstaclesContainer;
 
+        public event Action<bool> OnGameFinished;
+        
         private Vector3 _direction;
+        private Vector3 _playerStartPosition;
         private InputAction _touchAction;
         private BallPlayer _ballPlayer;
         private FinishPoint _finishPoint;
@@ -39,6 +43,7 @@ namespace TestTaskBall.controllers {
                 _ballPlayer.OnCriticalSizeAchieved += OnCriticalSizeAchieved;
                 _finishPoint.SetPlayer(playerTransform);
                 _cameraController.SetTarget(playerTransform);
+                _playerStartPosition = playerTransform.position;
             }
 
             _poolManager = new PoolManager();
@@ -50,6 +55,15 @@ namespace TestTaskBall.controllers {
             
             _obstaclesController.SubscribeOnInfectionComplete(OnInfectionComplete);
             
+            LoadLevel();
+        }
+
+        public void Restart() {
+            _ballPlayer.transform.position = _playerStartPosition;
+            _obstaclesController.Reset();
+            _bulletsController.Reset();
+            _finishPoint.ResetState();
+            _cameraController.SnapToTarget();
             LoadLevel();
         }
 
@@ -87,17 +101,20 @@ namespace TestTaskBall.controllers {
             _finishPoint = null;
             _bulletsController.Dispose();
             _bulletsController = null;
+            _obstaclesController.SubscribeOnInfectionComplete(OnInfectionComplete);
             _obstaclesController.Dispose();
             _obstaclesController = null;
             _poolManager.Dispose();
             _poolManager = null;
             _camera = null;
+            OnGameFinished = null;
         }
 
         private void OnCriticalSizeAchieved() {
             _pressed = false;
             _ballPlayer.OnObjectReleased();
             _bulletsController.DestroyBullet();
+            OnGameFinished?.Invoke(false);
         }
 
         private void OnInfectionComplete() {
@@ -127,6 +144,8 @@ namespace TestTaskBall.controllers {
         private void OnPlayerMovementComplete() {
             if (_finishPoint.transform.position.z - _ballPlayer.transform.position.z <= MOVEMENT_DISTANCE_THRESHOLD) {
                 _complete = true;
+                OnGameFinished?.Invoke(true);
+                return;
             }
 
             _cameraController.StartFollow(true);

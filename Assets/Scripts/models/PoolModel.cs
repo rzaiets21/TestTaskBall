@@ -31,6 +31,12 @@ namespace TestTaskBall.models {
             return obj;
         }
 
+        public void ReleaseAll() {
+            foreach (var item in _list) {
+                item.Release();
+            }
+        }
+
         public void Dispose() {
             _list.Clear();
         }

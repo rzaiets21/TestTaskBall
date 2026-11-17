@@ -43,6 +43,11 @@ namespace TestTaskBall.controllers {
             }
         }
 
+        public void Reset() {
+            DestroyBullet();
+            _pool.ReleaseAll();
+        }
+
         public void Dispose() {
             _obstaclesController = null;
             _currentBallBullet = null;

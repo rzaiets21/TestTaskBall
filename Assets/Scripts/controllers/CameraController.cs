@@ -22,6 +22,11 @@ namespace TestTaskBall.controllers {
             _following = state;
         }
 
+        public void SnapToTarget() {
+            if (_target != null)
+                transform.position = _target.position + _offset;
+        }
+
         private void LateUpdate() {
             if (!_following || _target == null)
                 return;
@@ -30,11 +35,6 @@ namespace TestTaskBall.controllers {
             var t = 1f - Mathf.Exp(-_followSharpness * Time.deltaTime);
 
             transform.position = Vector3.Lerp(transform.position, desiredPosition, t);
-        }
-
-        private void SnapToTarget() {
-            if (_target != null)
-                transform.position = _target.position + _offset;
         }
 
         private void OnDestroy() {

@@ -66,6 +66,10 @@ namespace TestTaskBall.controllers {
             _onInfectionComplete?.Invoke();
         }
 
+        public void Reset() {
+            _activeObstacles?.Clear();
+        }
+
         public void Dispose() {
             _pool.Dispose();
             _pool = null;
