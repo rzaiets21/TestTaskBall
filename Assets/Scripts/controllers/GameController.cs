@@ -96,6 +96,7 @@ namespace TestTaskBall.controllers {
 
         private void OnCriticalSizeAchieved() {
             _pressed = false;
+            _ballPlayer.OnObjectReleased();
             _bulletsController.DestroyBullet();
         }
 
