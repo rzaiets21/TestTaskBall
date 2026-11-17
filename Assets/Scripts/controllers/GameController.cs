@@ -37,6 +37,7 @@ namespace TestTaskBall.controllers {
                 _ballPlayer.OnRadiusDecreasing += OnPlayerRadiusDecreasing;
                 _ballPlayer.OnCriticalSizeAchieved += OnCriticalSizeAchieved;
                 _direction = (_finishPoint.transform.position - _ballPlayer.transform.position).normalized;
+                _finishPoint.SetPlayer(_ballPlayer.transform);
             }
 
             _poolManager = new PoolManager();
@@ -55,7 +56,7 @@ namespace TestTaskBall.controllers {
             var levelData = _levelConfig.Data;
             _obstaclesController.SpawnObstacles(levelData);
             
-            _finishPoint.transform.position = _ballPlayer.transform.position + Vector3.forward * levelData.FinishPointDistance;
+            _finishPoint.Init(_ballPlayer.transform.position + Vector3.forward * levelData.FinishPointDistance);
             _ballPlayer.SetInitialRadius(levelData.InitialRadius);
             _ballPlayer.SetRadius(levelData.InitialRadius);
         }
@@ -104,7 +105,7 @@ namespace TestTaskBall.controllers {
                 return currentZ;
             }
 
-            if (Physics.SphereCast(_ballPlayer.transform.position, _ballPlayer.Radius/2f, Vector3.forward, out RaycastHit hit, distance, _obstacleMask)) {
+            if (Physics.SphereCast(_ballPlayer.transform.position, _ballPlayer.Radius/4f, Vector3.forward, out RaycastHit hit, distance, _obstacleMask)) {
                 return currentZ + Mathf.Max(0f, hit.distance - _levelConfig.Settings.StopGap);
             }
 
@@ -152,7 +153,7 @@ namespace TestTaskBall.controllers {
             
             _pressed = false;
             _ballPlayer.OnObjectReleased();
-            _bulletsController.Shoot(_direction);
+            _bulletsController.Shoot(_direction, _finishPoint.transform.position.z - _ballPlayer.transform.position.z);
         }
 
         private void OnPlayerRadiusDecreasing(float radius) {

@@ -9,13 +9,11 @@ namespace TestTaskBall.controllers {
         private PoolModel<BallBullet> _pool;
         private BallBullet _currentBallBullet;
         private ObstaclesController _obstaclesController;
-        private float _maxBulletDistance;
         private float _initialRadius;
         
         public void Init(PoolManager poolManager, BallBullet bulletPrefab, Transform container, ObstaclesController obstaclesController, LevelData levelData) {
             _pool = poolManager.AddPool(bulletPrefab, container);
             _obstaclesController = obstaclesController;
-            _maxBulletDistance = levelData.FinishPointDistance;
             _initialRadius = levelData.InitialRadius;
         }
 
@@ -31,9 +29,9 @@ namespace TestTaskBall.controllers {
             }
         }
 
-        public void Shoot(Vector3 direction) {
+        public void Shoot(Vector3 direction, float maxBulletDistance) {
             if (_currentBallBullet != null) {
-                _currentBallBullet.Shoot(direction, OnBulletComplete, _maxBulletDistance);
+                _currentBallBullet.Shoot(direction, OnBulletComplete, maxBulletDistance);
                 _currentBallBullet = null;
             }
         }
