@@ -18,8 +18,8 @@ namespace TestTaskBall.game.abstraction {
             UpdateScaleAndPosition();
         }
         
-        protected void UpdateScaleAndPosition() {
-            transform.localScale = (_radius / _initialRadius) * Vector3.one;
+        protected virtual void UpdateScaleAndPosition() {
+            transform.localScale = _size * Vector3.one;
             var position = transform.localPosition;
             transform.localPosition = new Vector3(position.x, _size / 2f, position.z);
         }

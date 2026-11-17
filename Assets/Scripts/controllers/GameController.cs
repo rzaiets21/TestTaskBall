@@ -121,6 +121,7 @@ namespace TestTaskBall.controllers {
             var targetZ = CalculateTargetZ();
             if (targetZ - _ballPlayer.transform.position.z >= MOVEMENT_DISTANCE_THRESHOLD) {
                 _ballPlayer.MoveTo(targetZ, OnPlayerMovementComplete);
+                _ballPlayer.ShowTrail(false);
             }
         }
         
@@ -149,6 +150,7 @@ namespace TestTaskBall.controllers {
             }
 
             _cameraController.StartFollow(true);
+            _ballPlayer.ShowTrail(true);
         }
 
         private void OnBallSelected() {

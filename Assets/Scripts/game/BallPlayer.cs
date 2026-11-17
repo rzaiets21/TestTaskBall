@@ -9,11 +9,13 @@ namespace TestTaskBall.game {
         private const float RADIUS_DECREASE_TIME = 6f;
         private const float CRITICAL_SIZE_RATIO = 0.05f;
         private const float MOVEMENT_DISTANCE_THRESHOLD = 0.001f;
+        private const float WIDTH_TRAIL_MULTIPLIER = 0.1f;
         
         public bool IsMoving => _movementTween != null && _movementTween.IsActive();
         public bool IsDead => _size <= CRITICAL_SIZE_RATIO;
 
         [SerializeField] private Transform _ballVisual;
+        [SerializeField] private Transform _ballWidthTrail;
         [SerializeField] private float _movementSpeed;
         [SerializeField] private float _jumpHeight;
         
@@ -33,6 +35,10 @@ namespace TestTaskBall.game {
         
         public void Init(Action clickAction) {
             _onClickCallback = clickAction;
+        }
+
+        public void ShowTrail(bool state) {
+            _ballWidthTrail.gameObject.SetActive(state);
         }
 
         public void OnObjectClicked() {
@@ -80,6 +86,14 @@ namespace TestTaskBall.game {
 
                     onCompleted?.Invoke();
                 });
+        }
+        
+        protected override void UpdateScaleAndPosition() {
+            _ballVisual.localScale = _size * Vector3.one;
+            _ballWidthTrail.localScale = new Vector3(_size * WIDTH_TRAIL_MULTIPLIER, _ballWidthTrail.localScale.y,
+                _ballWidthTrail.localScale.z);
+            transform.localPosition = new Vector3(transform.localPosition.x, _size / 2f, transform.localPosition.z);
+            _ballWidthTrail.localPosition = new Vector3(_ballWidthTrail.localPosition.x, -(_size / 2f) + WIDTH_TRAIL_MULTIPLIER, _ballWidthTrail.localPosition.z);
         }
 
         private void Stop() {
