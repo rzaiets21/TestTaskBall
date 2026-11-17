@@ -65,6 +65,7 @@ namespace TestTaskBall.controllers {
             _finishPoint.ResetState();
             _cameraController.SnapToTarget();
             LoadLevel();
+            _complete = false;
         }
 
         private void LoadLevel() {
@@ -74,6 +75,8 @@ namespace TestTaskBall.controllers {
             _finishPoint.Init(_ballPlayer.transform.position + Vector3.forward * levelData.FinishPointDistance);
             _ballPlayer.SetInitialRadius(levelData.InitialRadius);
             _ballPlayer.SetRadius(levelData.InitialRadius);
+
+            _ballPlayer.ShowTrail(true);
             
             _direction = (_finishPoint.transform.position - _ballPlayer.transform.position).normalized;
         }
