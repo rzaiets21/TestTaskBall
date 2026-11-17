@@ -11,6 +11,7 @@ namespace TestTaskBall.game {
         private const float MOVEMENT_DISTANCE_THRESHOLD = 0.001f;
         
         public bool IsMoving => _movementTween != null && _movementTween.IsActive();
+        public bool IsDead => _size <= CRITICAL_SIZE_RATIO;
 
         [SerializeField] private Transform _ballVisual;
         [SerializeField] private float _movementSpeed;
@@ -35,7 +36,7 @@ namespace TestTaskBall.game {
         }
 
         public void OnObjectClicked() {
-            if (IsMoving) {
+            if (IsMoving || IsDead) {
                 return;
             }
             _onClickCallback?.Invoke();

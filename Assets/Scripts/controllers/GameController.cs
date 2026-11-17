@@ -26,6 +26,7 @@ namespace TestTaskBall.controllers {
         private PoolManager _poolManager;
         private Camera _camera;
         private bool _pressed;
+        private bool _complete;
 
         public void Init(BallPlayer ballPlayer, BallBullet bulletPrefab, ObstacleView obstaclePrefab, FinishPoint finishPoint) {
             _ballPlayer = ballPlayer;
@@ -34,6 +35,7 @@ namespace TestTaskBall.controllers {
             if (_ballPlayer != null) {
                 _ballPlayer.Init(OnBallSelected);
                 _ballPlayer.OnRadiusDecreasing += OnPlayerRadiusDecreasing;
+                _ballPlayer.OnCriticalSizeAchieved += OnCriticalSizeAchieved;
                 _direction = (_finishPoint.transform.position - _ballPlayer.transform.position).normalized;
             }
 
@@ -74,15 +76,21 @@ namespace TestTaskBall.controllers {
             _touchAction.Disable();
             _touchAction = null;
             if (_ballPlayer != null) {
+                _ballPlayer.OnCriticalSizeAchieved -= OnCriticalSizeAchieved;
                 _ballPlayer.OnRadiusDecreasing -= OnPlayerRadiusDecreasing;
                 _ballPlayer = null;
             }
         }
 
+        private void OnCriticalSizeAchieved() {
+            _pressed = false;
+            _bulletsController.DestroyBullet();
+        }
+
         private void OnInfectionComplete() {
             var targetZ = CalculateTargetZ();
             if (targetZ - _ballPlayer.transform.position.z >= MOVEMENT_DISTANCE_THRESHOLD) {
-                _ballPlayer.MoveTo(targetZ);
+                _ballPlayer.MoveTo(targetZ, OnPlayerMovementComplete);
             }
         }
         
@@ -96,11 +104,17 @@ namespace TestTaskBall.controllers {
                 return currentZ;
             }
 
-            if (Physics.SphereCast(_ballPlayer.transform.position, _ballPlayer.Radius + _levelConfig.Settings.Clearance, Vector3.forward, out RaycastHit hit, distance, _obstacleMask)) {
+            if (Physics.SphereCast(_ballPlayer.transform.position, _ballPlayer.Radius/2f, Vector3.forward, out RaycastHit hit, distance, _obstacleMask)) {
                 return currentZ + Mathf.Max(0f, hit.distance - _levelConfig.Settings.StopGap);
             }
 
             return finishZ;
+        }
+
+        private void OnPlayerMovementComplete() {
+            if (_finishPoint.transform.position.z - _ballPlayer.transform.position.z <= MOVEMENT_DISTANCE_THRESHOLD) {
+                _complete = true;
+            }
         }
 
         private void OnBallSelected() {
@@ -109,6 +123,10 @@ namespace TestTaskBall.controllers {
         }
 
         private void OnPressed(InputAction.CallbackContext context) {
+            if (_complete) {
+                return;
+            }
+            
             if(context.control.device is Pointer pointer) {
                 var ray = _camera.ScreenPointToRay(pointer.position.ReadValue());
                 if (Physics.Raycast(ray, out var hit)) {

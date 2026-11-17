@@ -38,6 +38,13 @@ namespace TestTaskBall.controllers {
             }
         }
 
+        public void DestroyBullet() {
+            if (_currentBallBullet != null) {
+                _currentBallBullet.Release();
+                _currentBallBullet = null;
+            }
+        }
+
         private void OnBulletComplete(BallBullet ballBullet, ObstacleView obstacleView) {
             _obstaclesController.Infect(obstacleView, ballBullet.Radius);
             ballBullet.Release();

@@ -30,7 +30,7 @@ MonoBehaviour:
     MaxShotRadius: 1.25
     ShotRadiusStep: 0.025
     InfectionMultiplier: 4.5
-    StopGap: 1.26
+    StopGap: 2.25
     Reserve: 0.2
     MinShots: 3
     MaxLevelAttempts: 128
@@ -214,6 +214,6 @@ MonoBehaviour:
     - {x: -9.207922, y: 4.061197}
     - {x: -9.038764, y: 10.75391}
     - {x: -8.255698, y: 2.7503211}
-    _initialRadius: 2.2
+    _initialRadius: 3
     _finishPointDistance: 20
-    _infectionMultiplier: 4.5
+    _infectionMultiplier: 5.5
