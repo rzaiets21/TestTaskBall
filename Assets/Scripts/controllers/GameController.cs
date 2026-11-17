@@ -8,7 +8,6 @@ using UnityEngine.InputSystem;
 
 namespace TestTaskBall.controllers {
     public class GameController : MonoBehaviour {
-        private const float BULLET_SPAWN_OFFSET = 3f;
         private const float MOVEMENT_DISTANCE_THRESHOLD = 0.1f;
         
         [SerializeField] private LayerMask _obstacleMask;
@@ -38,7 +37,6 @@ namespace TestTaskBall.controllers {
                 _ballPlayer.Init(OnBallSelected);
                 _ballPlayer.OnRadiusDecreasing += OnPlayerRadiusDecreasing;
                 _ballPlayer.OnCriticalSizeAchieved += OnCriticalSizeAchieved;
-                _direction = (_finishPoint.transform.position - _ballPlayer.transform.position).normalized;
                 _finishPoint.SetPlayer(playerTransform);
                 _cameraController.SetTarget(playerTransform);
             }
@@ -62,6 +60,8 @@ namespace TestTaskBall.controllers {
             _finishPoint.Init(_ballPlayer.transform.position + Vector3.forward * levelData.FinishPointDistance);
             _ballPlayer.SetInitialRadius(levelData.InitialRadius);
             _ballPlayer.SetRadius(levelData.InitialRadius);
+            
+            _direction = (_finishPoint.transform.position - _ballPlayer.transform.position).normalized;
         }
 
         private void Awake() {
@@ -134,7 +134,7 @@ namespace TestTaskBall.controllers {
 
         private void OnBallSelected() {
             _pressed = true;
-            _bulletsController.SpawnBullet(_ballPlayer.transform.position + _direction * BULLET_SPAWN_OFFSET);
+            _bulletsController.SpawnBullet(_ballPlayer.transform.position + _direction * _levelConfig.Settings.StopGap);
         }
 
         private void OnPressed(InputAction.CallbackContext context) {

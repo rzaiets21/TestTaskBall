@@ -29,8 +29,8 @@ namespace TestTaskBall.game {
         private void PlayOpenAnimation() {
             _openDoorTween?.Kill();
             _openDoorTween = DOVirtual.Float(DEFAULT_GATES_OFFSET, OPEN_GATES_OFFSET, OPEN_GATES_DURATION, progress => {
-                _leftDoor.localPosition = new Vector3(-progress, 0f, 0f);
-                _rightDoor.localPosition = new Vector3(progress, 0f, 0f);
+                _leftDoor.localPosition = new Vector3(-progress, _leftDoor.localPosition.y, 0f);
+                _rightDoor.localPosition = new Vector3(progress, _rightDoor.localPosition.y, 0f);
             });
         }
 
